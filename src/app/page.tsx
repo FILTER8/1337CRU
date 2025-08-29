@@ -16,7 +16,7 @@ const SPRITE_PATTERN = [
 const actLabels = ["MINT", "WORLD", "REMIX", "TOGETHER", "ETHOS"];
 const acts: string[][] = [
   ["","1337","CRU","PHASE ONE","01.09.25","17:00 UTC", "Free Mint","for skulls holders", "Supply 1337"],
-  ["On Ethereum", "Fully On-Chain", "HTML as Art", "The Code is Canvas"],
+  ["On Eth", "Fully On-Chain", "HTML as Art", "The Code is Canvas"],
   ["mint IT", "code It", "collect it", "Link it"],
   ["connect", "grow", "play", "build","together"],
   ["CC0", "OPEN", "FUN", "Join the 1337 Cru"],
