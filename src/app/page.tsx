@@ -1,102 +1,210 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect, useRef, Fragment } from "react";
+import Head from "next/head";
+import "@/app/globals.css";
+import Link from "next/link";
+
+const SPRITE_PATTERN = [
+  [0, 1, 1, 1, 0],
+  [1, 0, 1, 0, 1],
+  [1, 1, 0, 1, 1],
+  [0, 1, 1, 1, 0],
+];
+
+// === Story Arc ===
+const actLabels = ["MINT", "WORLD", "REMIX", "TOGETHER", "ETHOS"];
+const acts: string[][] = [
+  ["","1337","CRU","PHASE ONE","01.09.25","17:00 UTC", "Free Mint","for skulls holders", "Supply 1337"],
+  ["On Ethereum", "Fully On-Chain", "HTML as Art", "The Code is Canvas"],
+  ["mint IT", "code It", "collect it", "Link it"],
+  ["connect", "grow", "play", "build","together"],
+  ["CC0", "OPEN", "FUN", "Join the 1337 Cru"],
+];
+
+// pacing controls
+const MESSAGE_BOUNCES = 1;            // bounces needed before switching to next message
+const END_LINGER_MULTIPLIER = 3;      // how much longer the final message lingers
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const positionRef = useRef<number>(0);
+  const directionRef = useRef<number>(1);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // sprite size/speed
+  const pixelSize = 14;
+  const spriteWidth = 5 * pixelSize;
+  const spriteHeight = 5 * pixelSize;
+  const speedPxPerFrame = 4;
+
+  // arc state
+  const [currentMessage, setCurrentMessage] = useState<string>(acts[0][0]);
+  const [actIndex, setActIndex] = useState<number>(0);
+
+  // refs used by the animation loop (don’t trigger re-renders)
+  const actIndexRef = useRef<number>(0);
+  const messageIndexRef = useRef<number>(0);
+  const remainingBouncesRef = useRef<number>(MESSAGE_BOUNCES);
+
+  // countdown
+  const [countdown, setCountdown] = useState<string>("");
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        const setCanvasSize = () => {
+          canvas.width = window.innerWidth;
+          canvas.height = spriteHeight + 40;
+        };
+        setCanvasSize();
+
+        const advanceMessage = () => {
+          // compute NEXT indices first (so we can decide if it should linger)
+          const currentActLen = acts[actIndexRef.current].length;
+          let nextAct = actIndexRef.current;
+          let nextMsg = messageIndexRef.current + 1;
+
+          if (nextMsg >= currentActLen) {
+            nextMsg = 0;
+            nextAct = (actIndexRef.current + 1) % acts.length;
+          }
+
+          const isNextLastOfLast =
+            nextAct === acts.length - 1 &&
+            nextMsg === acts[nextAct].length - 1;
+
+          // commit
+          actIndexRef.current = nextAct;
+          messageIndexRef.current = nextMsg;
+
+          setActIndex(nextAct);
+          setCurrentMessage(acts[nextAct][nextMsg]);
+
+          // reset pacing (linger longer on the FINAL message of the FINAL act)
+          remainingBouncesRef.current = isNextLastOfLast
+            ? MESSAGE_BOUNCES * END_LINGER_MULTIPLIER
+            : MESSAGE_BOUNCES;
+        };
+
+        const animateSprite = () => {
+          const windowWidth = window.innerWidth;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          // move sprite
+          positionRef.current += directionRef.current * speedPxPerFrame;
+
+          // bounce + pacing
+          if (positionRef.current + spriteWidth >= windowWidth) {
+            positionRef.current = windowWidth - spriteWidth;
+            directionRef.current = -1;
+            remainingBouncesRef.current -= 1;
+            if (remainingBouncesRef.current <= 0) advanceMessage();
+          } else if (positionRef.current <= 0) {
+            positionRef.current = 0;
+            directionRef.current = 1;
+            remainingBouncesRef.current -= 1;
+            if (remainingBouncesRef.current <= 0) advanceMessage();
+          }
+
+          // draw sprite
+          for (let y = 0; y < 4; y++) {
+            for (let x = 0; x < 5; x++) {
+              ctx.fillStyle = SPRITE_PATTERN[y][x] === 1 ? "#00FF00" : "#000000";
+              ctx.fillRect(
+                positionRef.current + x * pixelSize,
+                y * pixelSize,
+                pixelSize,
+                pixelSize
+              );
+            }
+          }
+
+          requestAnimationFrame(animateSprite);
+        };
+
+        requestAnimationFrame(animateSprite);
+
+        const handleResize = () => {
+          setCanvasSize();
+        };
+        window.addEventListener("resize", handleResize);
+
+        return () => {
+          window.removeEventListener("resize", handleResize);
+        };
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const targetDate = new Date("2025-09-01T17:00:00Z").getTime();
+    const updateCountdown = () => {
+      const now = Date.now();
+      const timeLeft = Math.max(targetDate - now, 0);
+      const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+      setCountdown(
+        `${days.toString().padStart(2, "0")}:${hours
+          .toString()
+          .padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds
+          .toString()
+          .padStart(2, "0")}`
+      );
+    };
+    updateCountdown();
+    const timer = setInterval(updateCountdown, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-black text-[#00FF00] flex flex-col justify-between font-silkscreen">
+      <Head>
+        <title>1337 CRU</title>
+        <meta name="description" content="Welcome to 1337 Cru Game NFT on Ethereum Mainnet" />
+        <link rel="icon" href="/public/favicon.ico" />
+      </Head>
+
+      {/* Top: logo + act indicator */}
+      <div className="w-full text-center pt-2">
+        <div className="text-lm tracking-widest opacity-80">1337 CRU / PHASE 1</div>
+        <div className="mt-1 text-[10px] md:text-xs uppercase tracking-widest">
+          {actLabels.map((label, i) => (
+            <Fragment key={label}>
+              <span className={i === actIndex ? "opacity-100 underline" : "opacity-40"}>
+                {label}
+              </span>
+              {i < actLabels.length - 1 && <span className="opacity-30 mx-1">/</span>}
+            </Fragment>
+          ))}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </div>
+
+      {/* Main rotating message */}
+      <header className="flex flex-1 items-center justify-center text-center px-4">
+        <h1
+          className="text-7xl md:text-9xl leading-tight w-full break-words"
+          dangerouslySetInnerHTML={{ __html: currentMessage }}
+        />
+      </header>
+
+      {/* Bottom: Mint + countdown + sprite */}
+      <footer className="w-full flex flex-col items-center px-4 pb-6">
+        <div className="mb-6 text-center w-full">
+          <Link href="/mint">
+            <button
+              disabled={true}
+              className="px-6 py-3 w-full max-w-md bg-black text-[#00FF00] border-2 border-[#00FF00] font-silkscreen text-xl disabled:opacity-50 cursor-not-allowed hover:opacity-80 transition"
+            >
+              Mint
+            </button>
+          </Link>
+          <p className="mt-2 text-lm md:text-lg">Mint starts in: {countdown}</p>
+        </div>
+        <canvas ref={canvasRef} className="w-full" />
       </footer>
     </div>
   );
