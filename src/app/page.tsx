@@ -16,7 +16,7 @@ const SPRITE_PATTERN = [
 // === Story Arc ===
 const actLabels = ["MINT", "WORLD", "REMIX", "TOGETHER", "ETHOS"];
 const acts: string[][] = [
-  ["","1337","CRU","PHASE ONE","01.09.25","17:00 UTC", "Free Mint","for skulls holders", "Supply 1337"],
+  ["","1337","CRU","PHASE ONE","03.09.25","17:00 UTC", "Free Mint","for skulls holders", "Supply 1337"],
   ["On Eth", "Fully On-Chain", "HTML as Art", "The Code is Canvas"],
   ["mint IT", "code It", "collect it", "Link it"],
   ["connect", "grow", "play", "build","together"],
@@ -140,7 +140,7 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    const targetDate = new Date("2025-09-01T17:00:00Z").getTime();
+    const targetDate = new Date("2025-09-03T17:00:00Z").getTime();
     const updateCountdown = () => {
       const now = Date.now();
       const timeLeft = Math.max(targetDate - now, 0);
