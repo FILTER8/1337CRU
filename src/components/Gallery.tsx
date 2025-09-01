@@ -143,7 +143,7 @@ export default function Gallery({
 
   return (
     <div className="w-full">
-      <h2 className="text-2xl mb-4">Your 1337 Cru Game NFTs</h2>
+      <h2 className="text-2xl mb-4">Your 1337Cru Game NFTs</h2>
       <div className="grid grid-cols-2 gap-4">
         {nfts.map((nft) => (
           <NftCard key={nft.tokenId} nft={nft} onSelect={onSelect} />
