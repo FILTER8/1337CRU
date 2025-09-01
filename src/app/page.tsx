@@ -5,6 +5,7 @@ import Head from "next/head";
 import "@/app/globals.css";
 import Link from "next/link";
 
+
 const SPRITE_PATTERN = [
   [0, 1, 1, 1, 0],
   [1, 0, 1, 0, 1],
