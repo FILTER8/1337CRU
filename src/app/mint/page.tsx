@@ -180,7 +180,7 @@ export default function Page() {
       )}
 
       <main className="flex flex-col items-center gap-6 max-w-md w-full">
-        <h1 className="text-4xl text-center">1337 Cru Game Mint</h1>
+        <h1 className="text-4xl text-[#FF0000] text-center">1337 Cru Game Mint</h1>
         <p className="text-center">
           Mint your fully on-chain HTML game NFT on ETH. 1337 SKULL HOLDER 1 FREE MINT. PUBLIC NO LIMIT
         </p>

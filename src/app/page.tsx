@@ -1,10 +1,10 @@
-"use client";
+// app/page.tsx
+'use client';
 
 import { useState, useEffect, useRef, Fragment } from "react";
 import Head from "next/head";
 import "@/app/globals.css";
 import Link from "next/link";
-
 
 const SPRITE_PATTERN = [
   [0, 1, 1, 1, 0],
@@ -24,30 +24,26 @@ const acts: string[][] = [
 ];
 
 // pacing controls
-const MESSAGE_BOUNCES = 1;            // bounces needed before switching to next message
-const END_LINGER_MULTIPLIER = 3;      // how much longer the final message lingers
+const MESSAGE_BOUNCES = 1;            
+const END_LINGER_MULTIPLIER = 3;      
 
 export default function Home() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const positionRef = useRef<number>(0);
   const directionRef = useRef<number>(1);
 
-  // sprite size/speed
   const pixelSize = 14;
   const spriteWidth = 5 * pixelSize;
   const spriteHeight = 5 * pixelSize;
   const speedPxPerFrame = 4;
 
-  // arc state
   const [currentMessage, setCurrentMessage] = useState<string>(acts[0][0]);
   const [actIndex, setActIndex] = useState<number>(0);
 
-  // refs used by the animation loop (don’t trigger re-renders)
   const actIndexRef = useRef<number>(0);
   const messageIndexRef = useRef<number>(0);
   const remainingBouncesRef = useRef<number>(MESSAGE_BOUNCES);
 
-  // countdown
   const [countdown, setCountdown] = useState<string>("");
 
   useEffect(() => {
@@ -62,7 +58,6 @@ export default function Home() {
         setCanvasSize();
 
         const advanceMessage = () => {
-          // compute NEXT indices first (so we can decide if it should linger)
           const currentActLen = acts[actIndexRef.current].length;
           let nextAct = actIndexRef.current;
           let nextMsg = messageIndexRef.current + 1;
@@ -76,14 +71,12 @@ export default function Home() {
             nextAct === acts.length - 1 &&
             nextMsg === acts[nextAct].length - 1;
 
-          // commit
           actIndexRef.current = nextAct;
           messageIndexRef.current = nextMsg;
 
           setActIndex(nextAct);
           setCurrentMessage(acts[nextAct][nextMsg]);
 
-          // reset pacing (linger longer on the FINAL message of the FINAL act)
           remainingBouncesRef.current = isNextLastOfLast
             ? MESSAGE_BOUNCES * END_LINGER_MULTIPLIER
             : MESSAGE_BOUNCES;
@@ -93,10 +86,8 @@ export default function Home() {
           const windowWidth = window.innerWidth;
           ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-          // move sprite
           positionRef.current += directionRef.current * speedPxPerFrame;
 
-          // bounce + pacing
           if (positionRef.current + spriteWidth >= windowWidth) {
             positionRef.current = windowWidth - spriteWidth;
             directionRef.current = -1;
@@ -109,7 +100,6 @@ export default function Home() {
             if (remainingBouncesRef.current <= 0) advanceMessage();
           }
 
-          // draw sprite
           for (let y = 0; y < 4; y++) {
             for (let x = 0; x < 5; x++) {
               ctx.fillStyle = SPRITE_PATTERN[y][x] === 1 ? "#00FF00" : "#000000";
@@ -166,7 +156,7 @@ export default function Home() {
       <Head>
         <title>1337 CRU</title>
         <meta name="description" content="Welcome to 1337 Cru Game NFT on Ethereum Mainnet" />
-        <link rel="icon" href="/public/favicon.ico" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       {/* Top: logo + act indicator */}
@@ -192,21 +182,32 @@ export default function Home() {
         />
       </header>
 
-      {/* Bottom: Mint + countdown + sprite */}
+      {/* Bottom: Linktree style menu + Mint + countdown + sprite */}
       <footer className="w-full flex flex-col items-center px-4 pb-6">
-        <div className="mb-6 text-center w-full">
-          <Link href="/mint">
+        {/* Linktree-style links */}
+        <div className="flex flex-col items-center w-full max-w-md mb-6 space-y-3">
+          <Link href="/about" className="w-full">
+            <button
+              className="px-6 py-3 w-full bg-[#00FF00] text-black border-2 border-[#00FF00] font-silkscreen text-xl hover:bg-[#00CC00] transition"
+            >
+              About
+            </button>
+          </Link>
+
+          <Link href="/mint" className="w-full">
             <button
               disabled={true}
-              className="px-6 py-3 w-full max-w-md bg-black text-[#00FF00] border-2 border-[#00FF00] font-silkscreen text-xl disabled:opacity-50 cursor-not-allowed hover:opacity-80 transition"
+              className="px-6 py-3 w-full bg-black text-[#00FF00] border-2 border-[#00FF00] font-silkscreen text-xl disabled:opacity-50 cursor-not-allowed hover:opacity-80 transition"
             >
               Mint
             </button>
           </Link>
-          <p className="mt-2 text-lm md:text-lg">Mint starts in: {countdown}</p>
         </div>
+
+        <p className="mt-2 text-lm md:text-lg">Mint starts in: {countdown}</p>
         <canvas ref={canvasRef} className="w-full" />
       </footer>
+
     </div>
   );
 }
