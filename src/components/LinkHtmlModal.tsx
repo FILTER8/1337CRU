@@ -3,11 +3,11 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { usePublicClient } from 'wagmi';
-import { sepolia } from 'wagmi/chains';
+import { mainnet } from 'wagmi/chains';
 import type { Abi } from 'abitype';
 import CRUGAME_ABI from '@/abi/CruGame1337.json';
 
-const CONTRACT_ADDRESS = '0x11dc1b59f6E396477CBe559D33c8103D0386B4ee' as const;
+const CONTRACT_ADDRESS = '0x05D8a0Df083bB20FfB9360B3aF458A5de5c9F2A4' as const;
 type AbiJson = { abi: Abi };
 const ABI: Abi = (CRUGAME_ABI as AbiJson).abi ?? (CRUGAME_ABI as unknown as Abi);
 
@@ -30,7 +30,7 @@ export default function LinkHtmlModal({
   onConfirmHtml: (entryId: number) => Promise<void>;
   onConfirmPreview: (entryId: number) => Promise<void>;
 }) {
-  const client = usePublicClient({ chainId: sepolia.id });
+  const client = usePublicClient({ chainId: mainnet.id });
 
   const [tab, setTab] = useState<TabKind>('html');
 

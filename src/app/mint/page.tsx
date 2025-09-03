@@ -5,7 +5,7 @@ import { useMemo, useState } from 'react';
 import Head from 'next/head';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { useAccount, useReadContract, useSwitchChain, useWriteContract } from 'wagmi';
-import { sepolia } from 'wagmi/chains';
+import { mainnet } from 'wagmi/chains';
 import { formatEther } from 'viem';
 
 import Gallery from '@/components/Gallery';
@@ -44,8 +44,8 @@ const ERC721_MIN_ABI = [
   },
 ] as const;
 
-const CONTRACT_ADDRESS = '0x11dc1b59f6E396477CBe559D33c8103D0386B4ee' as `0x${string}`;
-const WHITELISTED_NFT_ADDRESS = '0xa9B91406Fc253A4dd507AF4B5177EB323bD07A0B' as `0x${string}`;
+const CONTRACT_ADDRESS = '0x05D8a0Df083bB20FfB9360B3aF458A5de5c9F2A4' as `0x${string}`;
+const WHITELISTED_NFT_ADDRESS = '0x9251dEC8DF720C2ADF3B6f46d968107cbBADf4d4' as `0x${string}`;
 
 export default function Page() {
   const [qty, setQty] = useState(1);
@@ -57,7 +57,7 @@ export default function Page() {
 
   const { address, isConnected, chain } = useAccount();
   const { switchChain } = useSwitchChain();
-  const onSepolia = chain?.id === sepolia.id;
+  const onMainnet = chain?.id === mainnet.id;
 
   // reads
   const { data: totalSupplyRaw } = useReadContract({
@@ -98,7 +98,7 @@ export default function Page() {
     abi: ERC721_MIN_ABI,
     functionName: 'balanceOf',
     args: address ? [address] : undefined,
-    chainId: sepolia.id,
+    chainId: mainnet.id,
     query: { enabled: !!address, refetchInterval: 15_000 },
   });
 
@@ -122,8 +122,8 @@ export default function Page() {
     setMintSuccessCount(null);
     try {
       if (!isConnected) throw new Error('Please connect your wallet.');
-      if (!onSepolia) {
-        switchChain({ chainId: sepolia.id });
+      if (!onMainnet) {
+        switchChain({ chainId: mainnet.id });
         return;
       }
       if (qty < 1 || qty > 10) throw new Error('Quantity must be 1–10.');
@@ -203,7 +203,19 @@ export default function Page() {
             <p className="text-black mt-2">Already claimed free mint.</p>
           )}
           {address && !isEligible && <p className="text-black mt-2">No 1337 SKULL detected.</p>}
+
         </div>
+
+        <p>
+  <a
+    href="https://opensea.io/collection/1337-cru-game-1"
+    target="_blank"
+    rel="noreferrer"
+    className="underline hover:opacity-80"
+  >
+    View on OpenSea
+  </a>
+</p>
 
         {isConnected && (
           <div className="flex flex-col gap-4 w-full">
@@ -232,7 +244,7 @@ export default function Page() {
               <p>
                 Successfully minted {mintSuccessCount}. Tx:{' '}
                 <a
-                  href={`https://sepolia.etherscan.io/tx/${txHash}`}
+                  href={`https://etherscan.io/tx/${txHash}`}
                   className="underline"
                   target="_blank"
                   rel="noreferrer"

@@ -6,7 +6,7 @@ import { useWriteContract } from 'wagmi';
 import type { Abi } from 'abitype';
 import CRUGAME_ABI from '@/abi/CruGame1337.json';
 
-const CONTRACT_ADDRESS = '0x11dc1b59f6E396477CBe559D33c8103D0386B4ee' as const;
+const CONTRACT_ADDRESS = '0x05D8a0Df083bB20FfB9360B3aF458A5de5c9F2A4' as const;
 
 // Narrow the JSON import to a proper Abi without using `any`
 type AbiJson = { abi: Abi };
@@ -156,7 +156,7 @@ export default function CreateEntryModal({
           <p className="mb-3">
             Tx:{' '}
             <a
-              href={`https://sepolia.etherscan.io/tx/${tx}`}
+              href={`https://etherscan.io/tx/${tx}`}
               className="underline"
               target="_blank"
               rel="noreferrer"

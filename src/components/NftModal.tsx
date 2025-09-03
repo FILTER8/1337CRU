@@ -3,15 +3,15 @@
 
 import { useRef, useState, useMemo } from 'react';
 import { useReadContract } from 'wagmi';
-import { sepolia } from 'wagmi/chains';
+import { mainnet } from 'wagmi/chains';
 import LinkHtmlModal from './LinkHtmlModal';
 import CreateEntryModal from './CreateEntryModal';
 import CRUGAME_ABI from '@/abi/CruGame1337.json';
 
-const CONTRACT_ADDRESS = '0x11dc1b59f6E396477CBe559D33c8103D0386B4ee' as const;
+const CONTRACT_ADDRESS = '0x05D8a0Df083bB20FfB9360B3aF458A5de5c9F2A4' as const;
 
 const ALCHEMY_API_KEY = process.env.NEXT_PUBLIC_ALCHEMY_API_KEY!;
-const REFRESH_URL = `https://eth-sepolia.g.alchemy.com/nft/v3/${ALCHEMY_API_KEY}/refreshNftMetadata`;
+const REFRESH_URL = `https://eth-mainnet.g.alchemy.com/nft/v3/${ALCHEMY_API_KEY}/refreshNftMetadata`;
 
 // ---- Types (replace 'any') ----
 type Attribute = { trait_type?: string; type?: string; value?: string | number };
@@ -72,7 +72,7 @@ export default function NftModal({
     abi: CRUGAME_ABI.abi,
     functionName: 'tokenURI',
     args: [tokenIdBig],
-    chainId: sepolia.id,
+    chainId: mainnet.id,
     query: { refetchInterval: 15_000 },
   });
 
