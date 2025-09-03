@@ -195,12 +195,14 @@ export default function Home() {
           </Link>
 
           <Link href="/mint" className="w-full">
-            <button
-              disabled={true}
-              className="px-6 py-3 w-full bg-black text-[#00FF00] border-2 border-[#00FF00] font-silkscreen text-xl disabled:opacity-50 cursor-not-allowed hover:opacity-80 transition"
-            >
-              Mint
-            </button>
+<Link href="/mint" className="w-full">
+  <button
+    className="px-6 py-3 w-full bg-black text-[#00FF00] border-2 border-[#00FF00] font-silkscreen text-xl hover:opacity-80 transition"
+  >
+    Mint
+  </button>
+</Link>
+
           </Link>
         </div>
 
