@@ -197,9 +197,9 @@ export default function Home() {
           <Link href="/mint" className="w-full">
 <Link href="/mint" className="w-full">
   <button
-    className="px-6 py-3 w-full bg-black text-[#00FF00] border-2 border-[#00FF00] font-silkscreen text-xl hover:opacity-80 transition"
+    className="px-6 py-3 w-full bg-black text-[#FF0000] border-2 border-[#FF0000] font-silkscreen text-xl hover:opacity-80 transition"
   >
-    Mint
+    Mint Now
   </button>
 </Link>
 
