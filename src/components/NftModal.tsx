@@ -81,14 +81,33 @@ export default function NftModal({
   const imageSrc = metadata?.image;
   const attributes: Attribute[] = metadata?.attributes ?? [];
 
-  const toggleFullscreen = () => {
-    if (!iframeRef.current) return;
-    if (!document.fullscreenElement) {
-      iframeRef.current.requestFullscreen().catch(() => {});
-    } else {
-      document.exitFullscreen().catch(() => {});
+const toggleFullscreen = async () => {
+  const el = iframeRef.current;
+  if (!el) return;
+
+  // Try standard & vendor-prefixed fullscreen
+  const anyEl = el as any;
+  try {
+    if (el.requestFullscreen) {
+      await el.requestFullscreen();
+      return;
     }
-  };
+    if (anyEl.webkitRequestFullscreen) {
+      anyEl.webkitRequestFullscreen();
+      return;
+    }
+    if (anyEl.msRequestFullscreen) {
+      anyEl.msRequestFullscreen();
+      return;
+    }
+  } catch {
+    // ignore and fallback
+  }
+
+  // Fallback: open the HTML in a new tab (best UX on iOS for data: URLs)
+  if (animationSrc) window.open(animationSrc, '_blank', 'noopener,noreferrer');
+};
+
 
   async function refreshThisTokenOnAlchemy() {
     try {
@@ -161,13 +180,15 @@ export default function NftModal({
         {refreshMsg && <p className="mb-3 text-sm opacity-80">{refreshMsg}</p>}
 
         {animationSrc ? (
-          <iframe
-            ref={iframeRef}
-            src={animationSrc}
-            className="w-full h-96 border-2 border-[#00FF00] rounded-none"
-            title={`NFT ${tokenIdBig.toString()} Animation`}
-            sandbox="allow-scripts"
-          />
+         <iframe
+  ref={iframeRef}
+  src={animationSrc}
+  className="w-full h-96 border-2 border-[#00FF00] rounded-none"
+  title={`NFT ${tokenIdBig.toString()} Animation`}
+  sandbox="allow-scripts allow-same-origin"
+  allow="fullscreen"
+  allowFullScreen
+/>
         ) : imageSrc ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
