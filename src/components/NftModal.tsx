@@ -114,44 +114,49 @@ export default function NftModal({
   return (
     <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50">
       <div className="bg-black text-[#00FF00] border-2 border-[#00FF00] p-6 max-w-3xl w-full max-h-[90vh] overflow-auto rounded-none">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-silkscreen">Token ID: {tokenIdBig.toString()}</h2>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setLinkOpen(true)}
-              className="bg-[#00FF00] text-black font-silkscreen py-1 px-3 border-2 border-[#00FF00] rounded-none hover:bg-[#00CC00]"
-            >
-              Link
-            </button>
-            <button
-              onClick={() => setCreateOpen(true)}
-              className="bg-[#00FF00] text-black font-silkscreen py-1 px-3 border-2 border-[#00FF00] rounded-none hover:bg-[#00CC00]"
-            >
-              Create
-            </button>
-            <button
-              onClick={refreshThisTokenOnAlchemy}
-              disabled={refreshBusy}
-              className="bg-black text-[#00FF00] font-silkscreen py-1 px-3 border-2 border-[#00FF00] rounded-none hover:bg-[#001A00] disabled:bg-gray-600 disabled:text-[#00FF00] disabled:border-gray-600"
-            >
-              {refreshBusy ? 'Refreshing…' : 'Refresh'}
-            </button>
-            {animationSrc && (
-              <button
-                onClick={toggleFullscreen}
-                className="bg-[#00FF00] text-black font-silkscreen py-1 px-3 border-2 border-[#00FF00] rounded-none hover:bg-[#00CC00]"
-              >
-                Fullscreen
-              </button>
-            )}
-            <button
-              onClick={onClose}
-              className="bg-[#00FF00] text-black font-silkscreen py-1 px-3 border-2 border-[#00FF00] rounded-none hover:bg-[#00CC00]"
-            >
-              Close
-            </button>
-          </div>
-        </div>
+        
+     {/* Header */}
+<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+  <h2 className="text-2xl font-silkscreen">Token ID: {tokenIdBig.toString()}</h2>
+
+  {/* Toolbar (wraps on mobile) */}
+  <div className="flex flex-wrap items-center justify-end gap-2 w-full md:w-auto">
+    <button
+      onClick={() => setLinkOpen(true)}
+      className="bg-[#00FF00] text-black font-silkscreen px-3 py-2 text-xs md:text-sm border-2 border-[#00FF00] rounded-none hover:bg-[#00CC00] whitespace-nowrap"
+    >
+      Link
+    </button>
+    <button
+      onClick={() => setCreateOpen(true)}
+      className="bg-[#00FF00] text-black font-silkscreen px-3 py-2 text-xs md:text-sm border-2 border-[#00FF00] rounded-none hover:bg-[#00CC00] whitespace-nowrap"
+    >
+      Create
+    </button>
+    <button
+      onClick={refreshThisTokenOnAlchemy}
+      disabled={refreshBusy}
+      className="bg-black text-[#00FF00] font-silkscreen px-3 py-2 text-xs md:text-sm border-2 border-[#00FF00] rounded-none hover:bg-[#001A00] disabled:bg-gray-600 disabled:text-[#00FF00] disabled:border-gray-600 whitespace-nowrap"
+    >
+      {refreshBusy ? 'Refreshing…' : 'Refresh'}
+    </button>
+    {animationSrc && (
+      <button
+        onClick={toggleFullscreen}
+        className="bg-[#00FF00] text-black font-silkscreen px-3 py-2 text-xs md:text-sm border-2 border-[#00FF00] rounded-none hover:bg-[#00CC00] whitespace-nowrap"
+      >
+        Fullscreen
+      </button>
+    )}
+    <button
+      onClick={onClose}
+      className="bg-[#00FF00] text-black font-silkscreen px-3 py-2 text-xs md:text-sm border-2 border-[#00FF00] rounded-none hover:bg-[#00CC00] whitespace-nowrap"
+    >
+      Close
+    </button>
+  </div>
+</div>
+
 
         {refreshMsg && <p className="mb-3 text-sm opacity-80">{refreshMsg}</p>}
 
