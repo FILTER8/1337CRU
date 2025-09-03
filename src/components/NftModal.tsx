@@ -85,28 +85,31 @@ const toggleFullscreen = async () => {
   const el = iframeRef.current;
   if (!el) return;
 
-  // Try standard & vendor-prefixed fullscreen
-  const anyEl = el as any;
+  const withVendors = el as HTMLIFrameElement & Partial<{
+    webkitRequestFullscreen: () => void;
+    msRequestFullscreen: () => void;
+  }>;
+
   try {
-    if (el.requestFullscreen) {
-      await el.requestFullscreen();
+    if (withVendors.requestFullscreen) {
+      await withVendors.requestFullscreen();
       return;
     }
-    if (anyEl.webkitRequestFullscreen) {
-      anyEl.webkitRequestFullscreen();
+    if (withVendors.webkitRequestFullscreen) {
+      withVendors.webkitRequestFullscreen();
       return;
     }
-    if (anyEl.msRequestFullscreen) {
-      anyEl.msRequestFullscreen();
+    if (withVendors.msRequestFullscreen) {
+      withVendors.msRequestFullscreen();
       return;
     }
   } catch {
-    // ignore and fallback
+    // ignore
   }
 
-  // Fallback: open the HTML in a new tab (best UX on iOS for data: URLs)
   if (animationSrc) window.open(animationSrc, '_blank', 'noopener,noreferrer');
 };
+
 
 
   async function refreshThisTokenOnAlchemy() {
