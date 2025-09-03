@@ -16,7 +16,7 @@ const SPRITE_PATTERN = [
 // === Story Arc ===
 const actLabels = ["MINT", "WORLD", "REMIX", "TOGETHER", "ETHOS"];
 const acts: string[][] = [
-  ["","1337","CRU","PHASE ONE","03.09.25","17:00 UTC", "Free Mint","for skulls holders", "Supply 1337"],
+  ["","1337","CRU","PHASE ONE","MINT","NOW", "Supply 1337"],
   ["On Eth", "Fully On-Chain", "HTML as Art", "The Code is Canvas"],
   ["mint IT", "code It", "collect it", "Link it"],
   ["connect", "grow", "play", "build","together"],
