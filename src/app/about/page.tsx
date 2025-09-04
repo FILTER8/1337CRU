@@ -32,6 +32,8 @@ function Nav() {
         </div>
         <nav className="text-[10px] md:text-xs flex gap-2 md:gap-3">
           {item('/', 'Start')}
+                              <span className="opacity-30">/</span>
+          {item('/mint', 'Mint')}
           <span className="opacity-30">/</span>
           {item('/about', 'About')}
         </nav>

@@ -44,8 +44,6 @@ export default function Home() {
   const messageIndexRef = useRef<number>(0);
   const remainingBouncesRef = useRef<number>(MESSAGE_BOUNCES);
 
-  const [countdown, setCountdown] = useState<string>("");
-
   useEffect(() => {
     const canvas = canvasRef.current;
     if (canvas) {
@@ -129,27 +127,6 @@ export default function Home() {
     }
   }, []);
 
-  useEffect(() => {
-    const targetDate = new Date("2025-09-03T17:00:00Z").getTime();
-    const updateCountdown = () => {
-      const now = Date.now();
-      const timeLeft = Math.max(targetDate - now, 0);
-      const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
-      setCountdown(
-        `${days.toString().padStart(2, "0")}:${hours
-          .toString()
-          .padStart(2, "0")}:${minutes.toString().padStart(2, "0")}:${seconds
-          .toString()
-          .padStart(2, "0")}`
-      );
-    };
-    updateCountdown();
-    const timer = setInterval(updateCountdown, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   return (
     <div className="min-h-screen bg-black text-[#00FF00] flex flex-col justify-between font-silkscreen">
@@ -183,32 +160,31 @@ export default function Home() {
       </header>
 
       {/* Bottom: Linktree style menu + Mint + countdown + sprite */}
-      <footer className="w-full flex flex-col items-center px-4 pb-6">
-        {/* Linktree-style links */}
-        <div className="flex flex-col items-center w-full max-w-md mb-6 space-y-3">
-          <Link href="/about" className="w-full">
-            <button
-              className="px-6 py-3 w-full bg-[#00FF00] text-black border-2 border-[#00FF00] font-silkscreen text-xl hover:bg-[#00CC00] transition"
-            >
-              About
-            </button>
-          </Link>
+{/* Bottom: Linktree style menu + Mint + sprite */}
+<footer className="w-full flex flex-col items-center px-4 pb-6">
+  <div className="flex flex-col items-center w-full max-w-md mb-6 space-y-3">
+    
+        <Link href="/mint" className="w-full">
+      <button
+        className="px-6 py-3 w-full bg-[#00FF00] text-black border-2 border-[#00FF00] font-silkscreen text-xl hover:bg-[#00CC00] transition"
 
-          <Link href="/mint" className="w-full">
-<Link href="/mint" className="w-full">
-  <button
-    className="px-6 py-3 w-full bg-black text-[#FF0000] border-2 border-[#FF0000] font-silkscreen text-xl hover:opacity-80 transition"
-  >
-    Mint Now
-  </button>
-</Link>
+      >
+        Mint Now
+      </button>
+    </Link>
+    <Link href="/about" className="w-full">
+      <button
+        className="px-6 py-3 w-full bg-[#00FF00] text-black border-2 border-[#00FF00] font-silkscreen text-xl hover:bg-[#00CC00] transition"
+      >
+        About
+      </button>
+    </Link>
 
-          </Link>
-        </div>
+  </div>
 
-        <p className="mt-2 text-lm md:text-lg">Mint starts in: {countdown}</p>
-        <canvas ref={canvasRef} className="w-full" />
-      </footer>
+  <canvas ref={canvasRef} className="w-full" />
+</footer>
+
 
     </div>
   );
