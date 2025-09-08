@@ -162,136 +162,188 @@ export default function Page() {
     return isFree ? '0 ETH (Free)' : `${(Number(priceEth) * qty).toFixed(6)} ETH`;
   }, [isEligible, hasFreeMinted, qty, priceEth]);
 
-  return (
-    <div className="min-h-screen bg-black text-[#00FF00] flex flex-col items-center p-4 font-silkscreen relative">
-      <Head>
-        <title>1337 Cru Game Mint</title>
-        <meta name="description" content="Mint your 1337 Cru Game NFT" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+return (
+  <div className="min-h-screen bg-black text-[#00FF00] flex flex-col items-center p-4 font-silkscreen relative">
+    <Head>
+      <title>1337 Cru Game Mint</title>
+      <meta name="description" content="Mint your 1337 Cru Game NFT" />
+      <link rel="icon" href="/favicon.ico" />
+    </Head>
 
-      {/* Pixel rain overlay (auto stops after 9s) */}
-      {rain && (
-        <PixelRain
-          active={rain}
-          autoStopAfterMs={9000}
-          onDone={() => setRain(false)}
+    {/* Pixel rain overlay (auto stops after 9s) */}
+    {rain && (
+      <PixelRain
+        active={rain}
+        autoStopAfterMs={9000}
+        onDone={() => setRain(false)}
+      />
+    )}
+
+    <main className="flex flex-col items-center gap-6 max-w-md w-full">
+      <h1 className="text-4xl text-[#FF0000] text-center">1337 Cru Game Mint</h1>
+      <p className="text-center">
+        Mint your fully on-chain HTML game NFT on ETH. 1337 SKULL HOLDER 1 FREE MINT. PUBLIC NO LIMIT
+      </p>
+
+      <ConnectButton />
+
+      <div className="w-full bg-[#00FF00] text-black p-4 border-2 border-[#00FF00] rounded-none">
+        <p>Total Supply: {totalSupply} / 1337</p>
+        <p>Remaining: {remainingSupply}</p>
+        <p>
+          Price:{' '}
+          {isEligible && !hasFreeMinted ? '0 ETH (Free Mint Eligible)' : `${priceEth} ETH`} per NFT
+        </p>
+        <p>Status: {isPaused ? 'Paused' : 'Active'}</p>
+        {address && <p>Wallet: {address.slice(0, 6)}…{address.slice(-4)}</p>}
+        {address && isEligible && !hasFreeMinted && (
+          <p className="text-black font-bold mt-2">Eligible for 1 free mint!</p>
+        )}
+        {address && isEligible && hasFreeMinted && (
+          <p className="text-black mt-2">Already claimed free mint.</p>
+        )}
+        {address && !isEligible && <p className="text-black mt-2">No 1337 SKULL detected.</p>}
+      </div>
+
+      {isConnected && (
+        <div className="flex flex-col gap-4 w-full">
+          {/* ROW 1: Quantity (+/−) and Total */}
+          <div className="w-full flex flex-col gap-3 border-2 border-[#00FF00] p-3">
+  {/* Row 1: label */}
+  <div>
+    <span className="text-[#00FF00]">Quantity (1–10):</span>
+  </div>
+
+  {/* Row 2: controls */}
+  <div className="flex items-center gap-3">
+    <button
+      type="button"
+      onClick={() => setQty(Math.max(1, qty - 1))}
+      className="px-3 py-2 border-2 border-[#00FF00] text-[#00FF00]"
+      disabled={qty <= 1 || isPaused || remainingSupply === 0 || isPending}
+    >
+      −
+    </button>
+
+    <input
+      type="number"
+      min={1}
+      max={10}
+      value={qty}
+      onChange={(e) => {
+        const n = Number(e.target.value);
+        setQty(Number.isFinite(n) ? n : 1);
+      }}
+      className="w-full text-center p-2 bg-black text-[#00FF00] border-2 border-[#00FF00]"
+      disabled={isPaused || remainingSupply === 0 || isPending}
+    />
+
+    <button
+      type="button"
+      onClick={() => setQty(Math.min(10, qty + 1))}
+      className="px-3 py-2 border-2 border-[#00FF00] text-[#00FF00]"
+      disabled={qty >= 10 || isPaused || remainingSupply === 0 || isPending}
+    >
+      +
+    </button>
+  </div>
+
+  {/* Row 3: total */}
+  <div className="text-sm sm:text-base">
+    Total: {totalDisplay}
+  </div>
+</div>
+
+
+
+          <button
+            onClick={handleMint}
+            disabled={isPaused || remainingSupply === 0 || isPending}
+            className="bg-[#00FF00] text-black py-2 px-4 border-2 border-[#00FF00] rounded-none hover:bg-[#00CC00] disabled:bg-gray-600 disabled:text-[#00FF00] disabled:border-gray-600"
+          >
+            {isEligible && !hasFreeMinted && qty === 1 ? 'Free Mint' : 'Mint'}
+          </button>
+
+          {error && <p className="text-[#FF0000]">{error}</p>}
+
+          {mintSuccessCount && txHash && (
+            <p>
+              Successfully minted {mintSuccessCount}. Tx:{' '}
+              <a
+                href={`https://etherscan.io/tx/${txHash}`}
+                className="underline"
+                target="_blank"
+                rel="noreferrer"
+              >
+                View on Etherscan
+              </a>
+            </p>
+          )}
+        </div>
+      )}
+
+                {/* ROW 2: Contract links */}
+          <div className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 p-2">
+            <span>Contract:</span>
+            <div className="flex gap-4">
+              <a
+                href={`https://etherscan.io/address/${CONTRACT_ADDRESS}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:opacity-80"
+              >
+                Etherscan
+              </a>
+              <a
+                href={`https://opensea.io/assets/ethereum/${CONTRACT_ADDRESS}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline hover:opacity-80"
+              >
+                OpenSea
+              </a>
+            </div>
+          </div>
+
+
+      {/* Gallery now notifies us which NFT to open in the modal */}
+      <Gallery
+        owner={address}
+        contractAddress={CONTRACT_ADDRESS}
+        onSelect={(nft: OwnedNftLite) => setSelectedNft(nft)}
+      />
+
+      {/* NFT Modal with on-chain HTML preview + linking */}
+      {selectedNft && (
+        <NftModal
+          nft={selectedNft}
+          onClose={() => setSelectedNft(null)}
+          onLinkConfirmHtml={async (tokenId: bigint, entryId: number) => {
+            await writeContractAsync({
+              address: CONTRACT_ADDRESS,
+              abi: CRUGAME_ABI.abi,
+              functionName: 'linkToHtmlEntry',
+              args: [tokenId, BigInt(entryId)],
+            });
+          }}
+          onLinkConfirmPreview={async (tokenId: bigint, entryId: number) => {
+            await writeContractAsync({
+              address: CONTRACT_ADDRESS,
+              abi: CRUGAME_ABI.abi,
+              functionName: 'linkToPreviewEntry',
+              args: [tokenId, BigInt(entryId)],
+            });
+          }}
         />
       )}
 
-      <main className="flex flex-col items-center gap-6 max-w-md w-full">
-        <h1 className="text-4xl text-[#FF0000] text-center">1337 Cru Game Mint</h1>
-        <p className="text-center">
-          Mint your fully on-chain HTML game NFT on ETH. 1337 SKULL HOLDER 1 FREE MINT. PUBLIC NO LIMIT
-        </p>
+      {/* Footer ticker (full viewport width) */}
+      <footer className="w-full mt-10">
+        <SpriteTicker height={60} pixelSize={10} speed={2} />
+      </footer>
+    </main>
+  </div>
+);
 
-        <ConnectButton />
 
-        <div className="w-full bg-[#00FF00] text-black p-4 border-2 border-[#00FF00] rounded-none">
-          <p>Total Supply: {totalSupply} / 1337</p>
-          <p>Remaining: {remainingSupply}</p>
-          <p>
-            Price:{' '}
-            {isEligible && !hasFreeMinted ? '0 ETH (Free Mint Eligible)' : `${priceEth} ETH`} per NFT
-          </p>
-          <p>Status: {isPaused ? 'Paused' : 'Active'}</p>
-          {address && <p>Wallet: {address.slice(0, 6)}…{address.slice(-4)}</p>}
-          {address && isEligible && !hasFreeMinted && (
-            <p className="text-black font-bold mt-2">Eligible for 1 free mint!</p>
-          )}
-          {address && isEligible && hasFreeMinted && (
-            <p className="text-black mt-2">Already claimed free mint.</p>
-          )}
-          {address && !isEligible && <p className="text-black mt-2">No 1337 SKULL detected.</p>}
-
-        </div>
-
-        <p>
-  <a
-    href="https://opensea.io/collection/1337-cru-game-1"
-    target="_blank"
-    rel="noreferrer"
-    className="underline hover:opacity-80"
-  >
-    View on OpenSea
-  </a>
-</p>
-
-        {isConnected && (
-          <div className="flex flex-col gap-4 w-full">
-            <div>
-              <label className="block mb-2">Quantity (1–10):</label>
-              <input
-                type="number"
-                min={1}
-                max={10}
-                value={qty}
-                onChange={(e) => setQty(Math.min(10, Math.max(1, Number(e.target.value))))}
-                className="w-full p-2 bg-black text-[#00FF00] border-2 border-[#00FF00] rounded-none font-silkscreen"
-                disabled={isPaused || remainingSupply === 0 || isPending}
-              />
-              <p className="mt-2">Total: {totalDisplay}</p>
-            </div>
-            <button
-              onClick={handleMint}
-              disabled={isPaused || remainingSupply === 0 || isPending}
-              className="bg-[#00FF00] text-black font-silkscreen py-2 px-4 border-2 border-[#00FF00] rounded-none hover:bg-[#00CC00] disabled:bg-gray-600 disabled:text-[#00FF00] disabled:border-gray-600"
-            >
-              {isEligible && !hasFreeMinted && qty === 1 ? 'Free Mint' : 'Mint'}
-            </button>
-            {error && <p className="text-[#FF0000]">{error}</p>}
-            {mintSuccessCount && txHash && (
-              <p>
-                Successfully minted {mintSuccessCount}. Tx:{' '}
-                <a
-                  href={`https://etherscan.io/tx/${txHash}`}
-                  className="underline"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  View on Etherscan
-                </a>
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* Gallery now notifies us which NFT to open in the modal */}
-        <Gallery
-          owner={address}
-          contractAddress={CONTRACT_ADDRESS}
-          onSelect={(nft: OwnedNftLite) => setSelectedNft(nft)}
-        />
-
-        {/* NFT Modal with on-chain HTML preview + linking */}
-        {selectedNft && (
-          <NftModal
-            nft={selectedNft}
-            onClose={() => setSelectedNft(null)}
-            onLinkConfirmHtml={async (tokenId: bigint, entryId: number) => {
-              await writeContractAsync({
-                address: CONTRACT_ADDRESS,
-                abi: CRUGAME_ABI.abi,
-                functionName: 'linkToHtmlEntry',
-                args: [tokenId, BigInt(entryId)],
-              });
-            }}
-            onLinkConfirmPreview={async (tokenId: bigint, entryId: number) => {
-              await writeContractAsync({
-                address: CONTRACT_ADDRESS,
-                abi: CRUGAME_ABI.abi,
-                functionName: 'linkToPreviewEntry',
-                args: [tokenId, BigInt(entryId)],
-              });
-            }}
-          />
-        )}
-
-        {/* Footer ticker (full viewport width) */}
-        <footer className="w-full mt-10">
-          <SpriteTicker height={60} pixelSize={10} speed={2} />
-        </footer>
-      </main>
-    </div>
-  );
 }
