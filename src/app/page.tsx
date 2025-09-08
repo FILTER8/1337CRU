@@ -159,19 +159,25 @@ export default function Home() {
         />
       </header>
 
-      {/* Bottom: Linktree style menu + Mint + countdown + sprite */}
-{/* Bottom: Linktree style menu + Mint + sprite */}
 <footer className="w-full flex flex-col items-center px-4 pb-6">
   <div className="flex flex-col items-center w-full max-w-md mb-6 space-y-3">
-    
-        <Link href="/mint" className="w-full">
+    <Link href="/mint" className="w-full">
       <button
         className="px-6 py-3 w-full bg-[#00FF00] text-black border-2 border-[#00FF00] font-silkscreen text-xl hover:bg-[#00CC00] transition"
-
       >
         Mint Now
       </button>
     </Link>
+
+    {/* NEW: How-To page */}
+    <Link href="/how-to" className="w-full">
+      <button
+        className="px-6 py-3 w-full bg-[#00FF00] text-black border-2 border-[#00FF00] font-silkscreen text-xl hover:bg-[#00CC00] transition"
+      >
+        How-To
+      </button>
+    </Link>
+
     <Link href="/about" className="w-full">
       <button
         className="px-6 py-3 w-full bg-[#00FF00] text-black border-2 border-[#00FF00] font-silkscreen text-xl hover:bg-[#00CC00] transition"
@@ -179,11 +185,11 @@ export default function Home() {
         About
       </button>
     </Link>
-
   </div>
 
   <canvas ref={canvasRef} className="w-full" />
 </footer>
+
 
 
     </div>
